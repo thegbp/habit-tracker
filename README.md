@@ -114,31 +114,86 @@ The app is live at `https://your-app.vercel.app`.
 
 ---
 
-## Push notification cron job
+## Push notifications — Supabase Edge Function
 
-`vercel.json` configures a cron that calls `/api/send-notifications` every hour:
+Push notifications are handled by a Supabase Edge Function scheduled via `pg_cron`.
+The function checks each user's configured notification time and timezone every hour
+and sends a Web Push notification only when they have incomplete habits.
 
-```json
-{
-  "crons": [{ "path": "/api/send-notifications", "schedule": "0 * * * *" }]
-}
-```
+### 1. Deploy the Edge Function
 
-The endpoint:
-- Reads all user profiles with notifications enabled.
-- Converts each user's configured notification time from their stored timezone to local hour.
-- If the current hour matches and the user has incomplete habits, sends a Web Push notification.
-- Marks `last_notification_sent` so the user isn't notified twice in one day.
-- Cleans up expired push subscriptions (HTTP 410).
-
-**The cron secret:** Vercel automatically adds `Authorization: Bearer <CRON_SECRET>` to cron requests. Set `CRON_SECRET` to any random string in both your `.env` and the Vercel environment variables dashboard.
-
-To test the endpoint manually:
+Install the Supabase CLI if you haven't already:
 
 ```bash
-curl -X POST https://your-app.vercel.app/api/send-notifications \
+npm install -g supabase
+```
+
+Log in and link your project:
+
+```bash
+supabase login
+supabase link --project-ref hndgoqrgjkpywzampjsl
+```
+
+Set the required secrets:
+
+```bash
+supabase secrets set SUPABASE_SERVICE_ROLE_KEY=your-service-role-key
+supabase secrets set VAPID_PUBLIC_KEY=your-vapid-public-key
+supabase secrets set VAPID_PRIVATE_KEY=your-vapid-private-key
+supabase secrets set VAPID_SUBJECT=mailto:you@example.com
+supabase secrets set CRON_SECRET=your-cron-secret
+```
+
+Deploy the function:
+
+```bash
+supabase functions deploy send-notifications --no-verify-jwt
+```
+
+> `--no-verify-jwt` lets pg_net call the function without a Supabase JWT. The
+> `CRON_SECRET` header check inside the function secures it instead.
+
+### 2. Enable pg_cron and pg_net
+
+In the Supabase dashboard → **Database → Extensions**, enable:
+- **pg_cron** — runs scheduled SQL jobs
+- **pg_net** — lets SQL make HTTP requests
+
+### 3. Set the app settings Supabase needs for the cron call
+
+In **Database → Settings** (or via SQL Editor):
+
+```sql
+alter database postgres set "app.settings.project_ref" = 'hndgoqrgjkpywzampjsl';
+alter database postgres set "app.settings.cron_secret" = 'your-cron-secret';
+```
+
+### 4. Schedule the cron job
+
+Run `supabase/migrations/002_pg_cron.sql` in the SQL Editor. This schedules
+the Edge Function to run every hour. The function respects each user's configured
+notification time and timezone, so running hourly ensures everyone is notified
+at the right local time.
+
+### 5. Test manually
+
+```bash
+curl -X POST https://hndgoqrgjkpywzampjsl.supabase.co/functions/v1/send-notifications \
   -H "Authorization: Bearer your-cron-secret"
 ```
+
+### Required Edge Function secrets
+
+| Secret | Where to get it |
+|---|---|
+| `SUPABASE_SERVICE_ROLE_KEY` | Supabase → Settings → API → service_role key |
+| `VAPID_PUBLIC_KEY` | Output of `npx web-push generate-vapid-keys` |
+| `VAPID_PRIVATE_KEY` | Output of `npx web-push generate-vapid-keys` |
+| `VAPID_SUBJECT` | `mailto:you@example.com` |
+| `CRON_SECRET` | Any random secret (must match `app.settings.cron_secret`) |
+
+`SUPABASE_URL` and `SUPABASE_ANON_KEY` are injected automatically by the Supabase runtime.
 
 ---
 
@@ -161,11 +216,18 @@ Requirements met:
 
 ```
 ├── api/
-│   └── send-notifications.js   # Vercel serverless cron handler
+│   └── send-notifications.js   # Returns 410 — replaced by Edge Function
 ├── public/icons/                # PWA icons (PNG + SVG)
 ├── scripts/
 │   ├── generate-icons.mjs       # PNG generation (requires sharp)
 │   └── make-placeholder-icons.mjs
+├── supabase/
+│   ├── functions/
+│   │   └── send-notifications/
+│   │       └── index.ts         # Edge Function (Web Push + VAPID, no npm deps)
+│   └── migrations/
+│       ├── 001_initial.sql      # Schema + RLS
+│       └── 002_pg_cron.sql      # pg_cron schedule for Edge Function
 ├── src/
 │   ├── components/
 │   │   ├── BottomNav.jsx
