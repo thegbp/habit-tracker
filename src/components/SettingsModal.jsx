@@ -73,7 +73,7 @@ export default function SettingsModal({ onClose }) {
       <div className="w-full max-w-sm bg-slate-800 rounded-2xl shadow-2xl border border-slate-700/60 overflow-hidden">
         <div className="flex items-center justify-between px-6 pt-5 pb-4 border-b border-slate-700/60">
           <h2 className="text-lg font-semibold text-white">Settings</h2>
-          <button onClick={onClose} className="text-slate-400 hover:text-white transition-colors">
+          <button onClick={onClose} aria-label="Close settings" className="text-slate-400 hover:text-white transition-colors">
             <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
               <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
             </svg>
@@ -96,8 +96,11 @@ export default function SettingsModal({ onClose }) {
 
           {/* Enable toggle */}
           <div className="flex items-center justify-between">
-            <span className="text-sm font-medium text-slate-300">Enable notifications</span>
+            <label htmlFor="notifications-toggle" className="text-sm font-medium text-slate-300">Enable notifications</label>
             <button
+              id="notifications-toggle"
+              role="switch"
+              aria-checked={enabled}
               onClick={() => setEnabled((v) => !v)}
               className={`relative w-11 h-6 rounded-full transition-colors ${enabled ? 'bg-indigo-600' : 'bg-slate-600'}`}
             >

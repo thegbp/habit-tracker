@@ -132,7 +132,7 @@ Log in and link your project:
 
 ```bash
 supabase login
-supabase link --project-ref hndgoqrgjkpywzampjsl
+supabase link --project-ref <your-project-ref>
 ```
 
 Set the required secrets:
@@ -165,7 +165,7 @@ In the Supabase dashboard → **Database → Extensions**, enable:
 In **Database → Settings** (or via SQL Editor):
 
 ```sql
-alter database postgres set "app.settings.project_ref" = 'hndgoqrgjkpywzampjsl';
+alter database postgres set "app.settings.project_ref" = '<your-project-ref>';
 alter database postgres set "app.settings.cron_secret" = 'your-cron-secret';
 ```
 
@@ -179,7 +179,7 @@ at the right local time.
 ### 5. Test manually
 
 ```bash
-curl -X POST https://hndgoqrgjkpywzampjsl.supabase.co/functions/v1/send-notifications \
+curl -X POST https://<your-project-ref>.supabase.co/functions/v1/send-notifications \
   -H "Authorization: Bearer your-cron-secret"
 ```
 

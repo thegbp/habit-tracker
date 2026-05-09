@@ -24,7 +24,9 @@ registerRoute(
   })
 )
 
-// Background sync queue for offline habit log writes
+// Background sync queue for offline habit log writes.
+// No cacheName here — write responses are not useful to cache; the plugin
+// handles retry of the request itself, not the response.
 const bgSync = new BackgroundSyncPlugin('habit-log-queue', {
   maxRetentionTime: 24 * 60
 })
@@ -34,7 +36,6 @@ registerRoute(
     url.hostname.includes('supabase.co') &&
     (request.method === 'POST' || request.method === 'PATCH'),
   new NetworkFirst({
-    cacheName: 'supabase-writes',
     plugins: [bgSync]
   }),
   'POST'

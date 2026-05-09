@@ -33,7 +33,7 @@ export function calcStreaks(logs, frequency, windowType = 'any') {
   if (completed.length === 0) return { current: 0, best: 0 }
 
   if (frequency === 'daily') return dailyStreaks(completed)
-  if (frequency === 'weekly') return weeklyStreaks(completed, windowType)
+  if (frequency === 'weekly') return weeklyStreaks(completed)
   if (frequency === 'monthly') return monthlyStreaks(completed)
   return { current: 0, best: 0 }
 }
@@ -71,13 +71,12 @@ function dailyStreaks(completed) {
   return { current, best }
 }
 
-function weeklyStreaks(completed, windowType) {
+function weeklyStreaks(completed) {
   // Bucket completions by ISO week start string
   const weeks = new Set(
     completed.map((l) => toDateStr(weekStart(new Date(l.date))))
   )
   const sortedWeeks = [...weeks].sort()
-  const thisWeek = toDateStr(weekStart(new Date()))
 
   // Current streak
   let current = 0
@@ -103,7 +102,6 @@ function weeklyStreaks(completed, windowType) {
 function monthlyStreaks(completed) {
   const months = new Set(completed.map((l) => toMonthStr(new Date(l.date))))
   const sortedMonths = [...months].sort()
-  const thisMonth = toMonthStr(new Date())
 
   // Current streak
   let current = 0
@@ -129,9 +127,8 @@ function monthlyStreaks(completed) {
 
 /**
  * Determines whether a habit is due today.
- * For weekly/monthly, also needs logs to know if already done this period.
  */
-export function isDueToday(habit, logsThisPeriod) {
+export function isDueToday(habit) {
   const today = new Date()
   const dow = today.getDay() // 0=Sun
 

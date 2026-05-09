@@ -71,38 +71,47 @@ export default function Habits() {
 
   async function handleSave(form) {
     setSaving(true)
-    if (editTarget) {
-      await supabase.from('habits').update({
-        name: form.name,
-        frequency: form.frequency,
-        window_type: form.window_type,
-        day_of_week: form.day_of_week,
-        schedulable: form.schedulable,
-      }).eq('id', editTarget.id)
-    } else {
-      await supabase.from('habits').insert({
-        user_id: user.id,
-        name: form.name,
-        frequency: form.frequency,
-        window_type: form.window_type,
-        day_of_week: form.frequency === 'weekly' && form.window_type === 'specific' ? form.day_of_week : null,
-        schedulable: form.schedulable,
-        active: true,
-      })
-    }
+    const dayOfWeek = form.frequency === 'weekly' && form.window_type === 'specific'
+      ? form.day_of_week
+      : null
+
+    const { error } = editTarget
+      ? await supabase.from('habits').update({
+          name: form.name,
+          frequency: form.frequency,
+          window_type: form.window_type,
+          day_of_week: dayOfWeek,
+          schedulable: form.schedulable,
+        }).eq('id', editTarget.id)
+      : await supabase.from('habits').insert({
+          user_id: user.id,
+          name: form.name,
+          frequency: form.frequency,
+          window_type: form.window_type,
+          day_of_week: dayOfWeek,
+          schedulable: form.schedulable,
+          active: true,
+        })
+
     setSaving(false)
+    if (error) {
+      console.error('handleSave failed:', error.message)
+      return
+    }
     setShowForm(false)
     setEditTarget(null)
     load()
   }
 
   async function handleArchive(habit) {
-    await supabase.from('habits').update({ active: false }).eq('id', habit.id)
+    const { error } = await supabase.from('habits').update({ active: false }).eq('id', habit.id)
+    if (error) { console.error('handleArchive failed:', error.message); return }
     load()
   }
 
   async function handleRestore(habit) {
-    await supabase.from('habits').update({ active: true }).eq('id', habit.id)
+    const { error } = await supabase.from('habits').update({ active: true }).eq('id', habit.id)
+    if (error) { console.error('handleRestore failed:', error.message); return }
     load()
   }
 

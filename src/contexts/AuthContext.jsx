@@ -4,7 +4,11 @@ import { supabase, supabaseMisconfigured } from '../lib/supabase'
 const AuthContext = createContext(null)
 
 // Set VITE_DEV_AUTOLOGIN=true in .env to bypass auth during local UI development.
-const DEV_AUTOLOGIN = import.meta.env.VITE_DEV_AUTOLOGIN === 'true'
+// import.meta.env.DEV is false in production builds (vite build), so this
+// can never activate in a deployed environment even if the env var is set.
+const DEV_AUTOLOGIN =
+  import.meta.env.VITE_DEV_AUTOLOGIN === 'true' &&
+  import.meta.env.DEV
 
 export function AuthProvider({ children }) {
   const [user, setUser] = useState(DEV_AUTOLOGIN ? { id: 'dev-user', email: 'dev@local' } : null)

@@ -16,7 +16,7 @@
  * SUPABASE_URL is injected automatically by the Supabase runtime.
  */
 
-import { serve } from 'https://deno.land/std@0.168.0/http/server.ts'
+import { serve } from 'https://deno.land/std@0.224.0/http/server.ts'
 import { createClient } from 'https://esm.sh/@supabase/supabase-js@2'
 
 // ─── Base64url helpers ────────────────────────────────────────────────────────
@@ -208,9 +208,10 @@ function localHour(timezone: string): string | null {
 // ─── Main handler ─────────────────────────────────────────────────────────────
 
 serve(async (req) => {
-  // Verify cron secret so the endpoint isn't publicly callable
+  // Verify cron secret so the endpoint isn't publicly callable.
+  // Also reject if CRON_SECRET is missing/empty — fail closed rather than open.
   const cronSecret = Deno.env.get('CRON_SECRET')
-  if (req.headers.get('Authorization') !== `Bearer ${cronSecret}`) {
+  if (!cronSecret || req.headers.get('Authorization') !== `Bearer ${cronSecret}`) {
     return new Response('Unauthorized', { status: 401 })
   }
 
@@ -299,7 +300,9 @@ serve(async (req) => {
     }
   }
 
-  return new Response(JSON.stringify({ ok: true, checked: (profiles ?? []).length, results }), {
+  // Return counts only — not endpoint fragments or user IDs in the response body.
+  const sent = results.filter((r: Record<string, unknown>) => r.ok).length
+  return new Response(JSON.stringify({ ok: true, checked: (profiles ?? []).length, sent }), {
     headers: { 'Content-Type': 'application/json' },
   })
 })

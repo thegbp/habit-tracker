@@ -57,7 +57,7 @@ export default function Today() {
 
   // Habits due today
   const dueHabits = habits.filter((h) => {
-    if (!isDueToday(h, logs[h.id] ?? [])) return false
+    if (!isDueToday(h)) return false
     // For weekly/monthly 'any': still show if already completed this period (to show state)
     return true
   })
@@ -72,21 +72,27 @@ export default function Today() {
   const showBanner = !bannerDismissed && dueHabits.length > 0 && !allResolved
 
   async function markComplete(habit) {
-    const existing = todayLogs[habit.id]
-    if (existing) {
-      await supabase.from('habit_logs').update({ completed: true, missed_reason: null }).eq('id', existing.id)
-    } else {
-      await supabase.from('habit_logs').insert({ habit_id: habit.id, user_id: user.id, date: today, completed: true })
+    // Upsert avoids a race condition where two rapid taps would both try to insert
+    // and hit the unique(habit_id, date) constraint.
+    const { error } = await supabase.from('habit_logs').upsert(
+      { habit_id: habit.id, user_id: user.id, date: today, completed: true, missed_reason: null },
+      { onConflict: 'habit_id,date' }
+    )
+    if (error) {
+      console.error('markComplete failed:', error.message)
+      return
     }
     load()
   }
 
   async function markMissed(habit, reason) {
-    const existing = todayLogs[habit.id]
-    if (existing) {
-      await supabase.from('habit_logs').update({ completed: false, missed_reason: reason || null }).eq('id', existing.id)
-    } else {
-      await supabase.from('habit_logs').insert({ habit_id: habit.id, user_id: user.id, date: today, completed: false, missed_reason: reason || null })
+    const { error } = await supabase.from('habit_logs').upsert(
+      { habit_id: habit.id, user_id: user.id, date: today, completed: false, missed_reason: reason || null },
+      { onConflict: 'habit_id,date' }
+    )
+    if (error) {
+      console.error('markMissed failed:', error.message)
+      return
     }
     setMissTarget(null)
     load()
@@ -126,6 +132,7 @@ export default function Today() {
         </div>
         <button
           onClick={() => setShowSettings(true)}
+          aria-label="Open settings"
           className="w-9 h-9 flex items-center justify-center rounded-full bg-slate-800 hover:bg-slate-700 text-slate-400 hover:text-white transition-colors"
         >
           <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
@@ -144,7 +151,7 @@ export default function Today() {
               {dueHabits.filter((h) => getStatus(h) === 'pending').length} habit{dueHabits.filter((h) => getStatus(h) === 'pending').length !== 1 ? 's' : ''} still to check in today
             </p>
           </div>
-          <button onClick={() => setBannerDismissed(true)} className="text-amber-500 hover:text-amber-300 shrink-0">
+          <button onClick={() => setBannerDismissed(true)} aria-label="Dismiss reminder" className="text-amber-500 hover:text-amber-300 shrink-0">
             <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
               <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
             </svg>
@@ -179,6 +186,8 @@ export default function Today() {
                   {/* Completion button */}
                   <button
                     onClick={() => status !== 'done' && status !== 'period-done' && markComplete(habit)}
+                    aria-label={status === 'done' || status === 'period-done' ? `${habit.name} completed` : `Mark ${habit.name} complete`}
+                    aria-pressed={status === 'done' || status === 'period-done'}
                     className={`w-7 h-7 rounded-full border-2 flex items-center justify-center shrink-0 transition-colors ${
                       status === 'done' || status === 'period-done'
                         ? 'bg-emerald-500 border-emerald-500'
