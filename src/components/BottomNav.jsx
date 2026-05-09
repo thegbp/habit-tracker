@@ -50,7 +50,9 @@ export default function BottomNav() {
           >
             {({ isActive }) => (
               <>
-                {icon(isActive)}
+                <div className={`p-1.5 rounded-xl transition-colors ${isActive ? 'bg-indigo-500/15' : ''}`}>
+                  {icon(isActive)}
+                </div>
                 <span>{label}</span>
               </>
             )}

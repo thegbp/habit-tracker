@@ -7,14 +7,14 @@ import BarChart from '../components/BarChart'
 
 function StatPill({ label, value, color = 'indigo' }) {
   const colors = {
-    indigo: 'bg-indigo-500/15 text-indigo-300',
-    emerald: 'bg-emerald-500/15 text-emerald-300',
-    amber: 'bg-amber-500/15 text-amber-300',
+    indigo: 'bg-indigo-950/60 border border-indigo-500/20 text-indigo-300',
+    emerald: 'bg-emerald-950/60 border border-emerald-500/20 text-emerald-300',
+    amber: 'bg-amber-950/60 border border-amber-500/20 text-amber-300',
   }
   return (
-    <div className={`rounded-xl px-3 py-2 text-center ${colors[color]}`}>
-      <p className="text-xl font-bold">{value}</p>
-      <p className="text-xs mt-0.5 opacity-70">{label}</p>
+    <div className={`rounded-2xl px-4 py-5 text-center ${colors[color]}`}>
+      <p className="text-3xl font-black">{value}</p>
+      <p className="text-xs mt-1 opacity-70">{label}</p>
     </div>
   )
 }

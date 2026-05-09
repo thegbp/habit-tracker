@@ -24,11 +24,13 @@ export default function Login() {
   }
 
   return (
-    <div className="min-h-full flex flex-col items-center justify-center px-6 bg-slate-950">
-      <div className="w-full max-w-sm">
+    <div className="relative min-h-full flex flex-col items-center justify-center px-6 bg-slate-950 overflow-hidden">
+      {/* Ambient gradient */}
+      <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top,_rgba(99,102,241,0.15)_0%,_transparent_60%)] pointer-events-none" />
+      <div className="w-full max-w-sm relative">
         {/* Logo */}
         <div className="flex flex-col items-center mb-10">
-          <div className="w-16 h-16 bg-indigo-600 rounded-2xl flex items-center justify-center mb-4 shadow-lg shadow-indigo-500/30">
+          <div className="w-16 h-16 bg-indigo-600 rounded-2xl flex items-center justify-center mb-4 shadow-2xl shadow-indigo-500/40 ring-1 ring-indigo-400/20">
             <svg aria-hidden="true" className="w-9 h-9 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}>
               <path strokeLinecap="round" strokeLinejoin="round" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
             </svg>
@@ -80,7 +82,7 @@ export default function Login() {
             <button
               type="submit"
               disabled={loading || !email.trim()}
-              className="w-full py-3 bg-indigo-600 hover:bg-indigo-500 disabled:opacity-50 rounded-xl text-white font-semibold transition-colors shadow-lg shadow-indigo-500/20"
+              className="w-full py-3 bg-indigo-600 hover:bg-indigo-500 disabled:opacity-50 rounded-xl text-white font-semibold transition-colors shadow-lg shadow-indigo-500/30"
             >
               {loading ? 'Sending…' : 'Send magic link'}
             </button>
