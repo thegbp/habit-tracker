@@ -1,4 +1,5 @@
 import { useState } from 'react'
+import { useFocusTrap } from '../lib/useFocusTrap'
 
 const PRESET_REASONS = ['forgot', 'too busy', 'travelling', 'unwell', 'other']
 
@@ -6,6 +7,7 @@ export default function MissDialog({ habitName, onConfirm, onCancel }) {
   const [step, setStep] = useState('confirm') // 'confirm' | 'reason'
   const [selected, setSelected] = useState('')
   const [custom, setCustom] = useState('')
+  const trapRef = useFocusTrap(onCancel)
 
   function handleConfirm() {
     setStep('reason')
@@ -18,7 +20,7 @@ export default function MissDialog({ habitName, onConfirm, onCancel }) {
 
   return (
     <div role="dialog" aria-modal="true" aria-labelledby="miss-dialog-title" className="fixed inset-0 z-50 flex items-end sm:items-center justify-center bg-black/60 backdrop-blur-sm p-4">
-      <div className="w-full max-w-sm bg-slate-800 rounded-2xl shadow-2xl border border-slate-700/60 overflow-hidden">
+      <div ref={trapRef} className="w-full max-w-sm bg-slate-800 rounded-2xl shadow-2xl border border-slate-700/60 overflow-hidden">
         {step === 'confirm' ? (
           <>
             <div className="p-6">

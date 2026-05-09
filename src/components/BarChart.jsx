@@ -5,9 +5,14 @@ export default function BarChart({ data }) {
   }
 
   const max = Math.max(...data.map((d) => d.count))
+  const total = data.reduce((sum, d) => sum + d.count, 0)
 
   return (
     <div className="space-y-2.5">
+      {/* Visually hidden summary for screen readers */}
+      <p className="sr-only">
+        Missed habit reasons: {data.map((d) => `${d.label} ${d.count} time${d.count !== 1 ? 's' : ''}`).join(', ')}. {total} missed entries total.
+      </p>
       {data.map(({ label, count }) => (
         <div key={label} className="flex items-center gap-3">
           <span className="text-slate-400 text-sm w-20 shrink-0 capitalize">{label}</span>

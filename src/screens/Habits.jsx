@@ -2,6 +2,7 @@ import { useState, useEffect, useCallback } from 'react'
 import { supabase } from '../lib/supabase'
 import { useAuth } from '../contexts/AuthContext'
 import HabitForm from '../components/HabitForm'
+import { useFocusTrap } from '../lib/useFocusTrap'
 
 const DAYS = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat']
 
@@ -53,6 +54,7 @@ export default function Habits() {
   const [showForm, setShowForm] = useState(false)
   const [editTarget, setEditTarget] = useState(null)
   const [saving, setSaving] = useState(false)
+  const formTrapRef = useFocusTrap(showForm ? () => { setShowForm(false); setEditTarget(null) } : undefined)
   const [showArchived, setShowArchived] = useState(false)
 
   const load = useCallback(async () => {
@@ -200,9 +202,9 @@ export default function Habits() {
 
       {/* Add/Edit modal */}
       {showForm && (
-        <div className="fixed inset-0 z-50 flex items-end sm:items-center justify-center bg-black/60 backdrop-blur-sm p-4">
-          <div className="w-full max-w-sm bg-slate-800 rounded-2xl shadow-2xl border border-slate-700/60 p-6">
-            <h2 className="text-lg font-semibold text-white mb-5">
+        <div role="dialog" aria-modal="true" aria-labelledby="habit-form-title" className="fixed inset-0 z-50 flex items-end sm:items-center justify-center bg-black/60 backdrop-blur-sm p-4">
+          <div ref={formTrapRef} className="w-full max-w-sm bg-slate-800 rounded-2xl shadow-2xl border border-slate-700/60 p-6">
+            <h2 id="habit-form-title" className="text-lg font-semibold text-white mb-5">
               {editTarget ? 'Edit habit' : 'New habit'}
             </h2>
             <HabitForm

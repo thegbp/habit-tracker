@@ -44,6 +44,8 @@ export default function Heatmap({ logs }) {
               <div
                 key={dateStr}
                 title={cellTitle(dateStr, log)}
+                aria-label={cellTitle(dateStr, log)}
+                role="img"
                 className={`w-3 h-3 rounded-sm ${cellColor(log)} transition-opacity hover:opacity-75`}
               />
             ))}

@@ -2,9 +2,11 @@ import { useState, useEffect } from 'react'
 import { supabase } from '../lib/supabase'
 import { subscribeToPush, unsubscribeFromPush, getPushSubscription } from '../lib/push'
 import { useAuth } from '../contexts/AuthContext'
+import { useFocusTrap } from '../lib/useFocusTrap'
 
 export default function SettingsModal({ onClose }) {
   const { user } = useAuth()
+  const trapRef = useFocusTrap(onClose)
   const [time, setTime] = useState('21:00')
   const [enabled, setEnabled] = useState(true)
   const [pushActive, setPushActive] = useState(false)
@@ -69,10 +71,10 @@ export default function SettingsModal({ onClose }) {
   }
 
   return (
-    <div className="fixed inset-0 z-50 flex items-end sm:items-center justify-center bg-black/60 backdrop-blur-sm p-4">
-      <div className="w-full max-w-sm bg-slate-800 rounded-2xl shadow-2xl border border-slate-700/60 overflow-hidden">
+    <div role="dialog" aria-modal="true" aria-labelledby="settings-title" className="fixed inset-0 z-50 flex items-end sm:items-center justify-center bg-black/60 backdrop-blur-sm p-4">
+      <div ref={trapRef} className="w-full max-w-sm bg-slate-800 rounded-2xl shadow-2xl border border-slate-700/60 overflow-hidden">
         <div className="flex items-center justify-between px-6 pt-5 pb-4 border-b border-slate-700/60">
-          <h2 className="text-lg font-semibold text-white">Settings</h2>
+          <h2 id="settings-title" className="text-lg font-semibold text-white">Settings</h2>
           <button onClick={onClose} aria-label="Close settings" className="text-slate-400 hover:text-white transition-colors">
             <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
               <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
