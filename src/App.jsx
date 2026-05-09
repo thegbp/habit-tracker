@@ -12,7 +12,7 @@ function AppRoutes() {
   if (loading) {
     return (
       <div className="flex items-center justify-center h-full bg-slate-950">
-        <div className="w-8 h-8 border-2 border-indigo-500 border-t-transparent rounded-full animate-spin" />
+        <div aria-label="Loading" role="status" className="w-8 h-8 border-2 border-indigo-500 border-t-transparent rounded-full motion-safe:animate-spin" />
       </div>
     )
   }

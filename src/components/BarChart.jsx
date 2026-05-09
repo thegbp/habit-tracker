@@ -13,7 +13,7 @@ export default function BarChart({ data }) {
           <span className="text-slate-400 text-sm w-20 shrink-0 capitalize">{label}</span>
           <div className="flex-1 h-5 bg-slate-700/50 rounded-full overflow-hidden">
             <div
-              className="h-full bg-indigo-500 rounded-full transition-all duration-500"
+              className="h-full bg-indigo-500 rounded-full motion-safe:transition-all motion-safe:duration-500"
               style={{ width: `${(count / max) * 100}%` }}
             />
           </div>

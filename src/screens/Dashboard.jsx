@@ -85,7 +85,7 @@ export default function Dashboard() {
   if (loading) {
     return (
       <div className="flex items-center justify-center h-full">
-        <div className="w-7 h-7 border-2 border-indigo-500 border-t-transparent rounded-full animate-spin" />
+        <div aria-label="Loading" role="status" className="w-7 h-7 border-2 border-indigo-500 border-t-transparent rounded-full motion-safe:animate-spin" />
       </div>
     )
   }
@@ -93,9 +93,9 @@ export default function Dashboard() {
   return (
     <div className="flex flex-col h-full">
       {/* Header */}
-      <div className="px-5 pt-12 pb-4 safe-top">
+      <header className="px-5 pt-12 pb-4 safe-top">
         <h1 className="text-2xl font-bold text-white">Dashboard</h1>
-      </div>
+      </header>
 
       <div className="flex-1 overflow-y-auto px-5 pb-6 space-y-6">
         {/* Summary metrics */}

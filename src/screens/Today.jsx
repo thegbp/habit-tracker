@@ -8,7 +8,8 @@ import SettingsModal from '../components/SettingsModal'
 function FrequencyBadge({ habit }) {
   const labels = { daily: 'Daily', weekly: habit.window_type === 'specific' ? 'Weekly' : 'Weekly (any)', monthly: 'Monthly' }
   return (
-    <span className="text-xs text-slate-500">{labels[habit.frequency] ?? habit.frequency}</span>
+    /* UI Polish: text-slate-400 on bg-slate-800 ≈ 5:1 contrast (AA pass); text-slate-500 was ≈ 3.4:1 (fail) */
+    <span className="text-xs text-slate-400">{labels[habit.frequency] ?? habit.frequency}</span>
   )
 }
 
@@ -115,7 +116,7 @@ export default function Today() {
   if (loading) {
     return (
       <div className="flex items-center justify-center h-full">
-        <div className="w-7 h-7 border-2 border-indigo-500 border-t-transparent rounded-full animate-spin" />
+        <div aria-label="Loading" role="status" className="w-7 h-7 border-2 border-indigo-500 border-t-transparent rounded-full motion-safe:animate-spin" />
       </div>
     )
   }
@@ -123,7 +124,7 @@ export default function Today() {
   return (
     <div className="flex flex-col h-full">
       {/* Header */}
-      <div className="flex items-center justify-between px-5 pt-12 pb-4 safe-top">
+      <header className="flex items-center justify-between px-5 pt-12 pb-4 safe-top">
         <div>
           <h1 className="text-2xl font-bold text-white">Today</h1>
           <p className="text-slate-400 text-sm mt-0.5">
@@ -140,7 +141,7 @@ export default function Today() {
             <path strokeLinecap="round" strokeLinejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
           </svg>
         </button>
-      </div>
+      </header>
 
       {/* EOD banner */}
       {showBanner && (
@@ -215,6 +216,7 @@ export default function Today() {
                     </p>
                     <div className="flex items-center gap-2 mt-0.5">
                       <FrequencyBadge habit={habit} />
+                    {/* UI Polish: FrequencyBadge uses text-slate-400 (not 500) for WCAG AA contrast on card bg */}
                       {todayLogs[habit.id]?.missed_reason && (
                         <span className="text-xs text-red-400 capitalize">{todayLogs[habit.id].missed_reason}</span>
                       )}

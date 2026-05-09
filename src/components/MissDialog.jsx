@@ -17,12 +17,12 @@ export default function MissDialog({ habitName, onConfirm, onCancel }) {
   }
 
   return (
-    <div className="fixed inset-0 z-50 flex items-end sm:items-center justify-center bg-black/60 backdrop-blur-sm p-4">
+    <div role="dialog" aria-modal="true" aria-labelledby="miss-dialog-title" className="fixed inset-0 z-50 flex items-end sm:items-center justify-center bg-black/60 backdrop-blur-sm p-4">
       <div className="w-full max-w-sm bg-slate-800 rounded-2xl shadow-2xl border border-slate-700/60 overflow-hidden">
         {step === 'confirm' ? (
           <>
             <div className="p-6">
-              <h2 className="text-lg font-semibold text-white mb-2">Mark as missed?</h2>
+              <h2 id="miss-dialog-title" className="text-lg font-semibold text-white mb-2">Mark as missed?</h2>
               <p className="text-slate-400 text-sm">
                 This will reset your streak for{' '}
                 <span className="text-white font-medium">{habitName}</span>.
@@ -53,6 +53,7 @@ export default function MissDialog({ habitName, onConfirm, onCancel }) {
                 {PRESET_REASONS.map((r) => (
                   <button
                     key={r}
+                    aria-pressed={selected === r}
                     onClick={() => setSelected(r)}
                     className={`px-3 py-1.5 rounded-full text-sm font-medium border transition-colors ${
                       selected === r

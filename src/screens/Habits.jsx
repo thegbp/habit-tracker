@@ -20,7 +20,8 @@ function HabitRow({ habit, onEdit, onArchive }) {
     <div className="bg-slate-800/80 border border-slate-700/60 rounded-2xl px-4 py-3.5 flex items-center gap-3">
       <div className="flex-1 min-w-0">
         <p className="text-white font-medium truncate">{habit.name}</p>
-        <p className="text-slate-500 text-xs mt-0.5">{meta()}</p>
+        {/* UI Polish: text-slate-400 for WCAG AA contrast on card bg */}
+        <p className="text-slate-400 text-xs mt-0.5">{meta()}</p>
       </div>
       <button
         onClick={() => onEdit(habit)}
@@ -128,13 +129,14 @@ export default function Habits() {
   return (
     <div className="flex flex-col h-full">
       {/* Header */}
-      <div className="flex items-center justify-between px-5 pt-12 pb-4 safe-top">
+      <header className="flex items-center justify-between px-5 pt-12 pb-4 safe-top">
         <h1 className="text-2xl font-bold text-white">Habits</h1>
         <button
           onClick={() => { setEditTarget(null); setShowForm(true) }}
+          aria-label="Add new habit"
           className="w-9 h-9 flex items-center justify-center rounded-full bg-indigo-600 hover:bg-indigo-500 text-white transition-colors shadow-lg shadow-indigo-500/30"
         >
-          <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}>
+          <svg aria-hidden="true" className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}>
             <path strokeLinecap="round" strokeLinejoin="round" d="M12 4v16m8-8H4" />
           </svg>
         </button>
@@ -143,7 +145,7 @@ export default function Habits() {
       <div className="flex-1 overflow-y-auto px-5 pb-4">
         {loading ? (
           <div className="flex items-center justify-center py-16">
-            <div className="w-7 h-7 border-2 border-indigo-500 border-t-transparent rounded-full animate-spin" />
+            <div aria-label="Loading" role="status" className="w-7 h-7 border-2 border-indigo-500 border-t-transparent rounded-full motion-safe:animate-spin" />
           </div>
         ) : (
           <>

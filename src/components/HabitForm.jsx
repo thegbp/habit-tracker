@@ -28,26 +28,28 @@ export default function HabitForm({ initial, onSave, onCancel, saving }) {
     <form onSubmit={handleSubmit} className="space-y-5">
       {/* Name */}
       <div>
-        <label className="block text-sm font-medium text-slate-300 mb-1.5">Habit name</label>
+        <label htmlFor="habit-name" className="block text-sm font-medium text-slate-300 mb-1.5">Habit name</label>
         <input
+          id="habit-name"
           autoFocus
           type="text"
           value={form.name}
           onChange={(e) => set('name', e.target.value)}
           placeholder="e.g. Morning run"
           maxLength={80}
-          className="w-full bg-slate-700 border border-slate-600 rounded-xl px-4 py-3 text-white placeholder-slate-500 focus:outline-none focus:border-indigo-500 transition-colors"
+          className="w-full bg-slate-700 border border-slate-600 rounded-xl px-4 py-3 text-white placeholder-slate-500 focus:outline-none focus:border-indigo-500 focus-visible:ring-2 focus-visible:ring-indigo-500 transition-colors"
         />
       </div>
 
       {/* Frequency */}
       <div>
-        <label className="block text-sm font-medium text-slate-300 mb-1.5">Frequency</label>
-        <div className="flex gap-2">
+        <p id="frequency-label" className="block text-sm font-medium text-slate-300 mb-1.5">Frequency</p>
+        <div role="group" aria-labelledby="frequency-label" className="flex gap-2">
           {['daily', 'weekly', 'monthly'].map((f) => (
             <button
               key={f}
               type="button"
+              aria-pressed={form.frequency === f}
               onClick={() => set('frequency', f)}
               className={`flex-1 py-2.5 rounded-xl text-sm font-medium border transition-colors ${
                 form.frequency === f
@@ -64,12 +66,13 @@ export default function HabitForm({ initial, onSave, onCancel, saving }) {
       {/* Weekly options */}
       {form.frequency === 'weekly' && (
         <div>
-          <label className="block text-sm font-medium text-slate-300 mb-1.5">Schedule</label>
-          <div className="flex gap-2 mb-3">
+          <p id="schedule-label" className="block text-sm font-medium text-slate-300 mb-1.5">Schedule</p>
+          <div role="group" aria-labelledby="schedule-label" className="flex gap-2 mb-3">
             {['any', 'specific'].map((w) => (
               <button
                 key={w}
                 type="button"
+                aria-pressed={form.window_type === w}
                 onClick={() => set('window_type', w)}
                 className={`flex-1 py-2.5 rounded-xl text-sm font-medium border transition-colors ${
                   form.window_type === w
