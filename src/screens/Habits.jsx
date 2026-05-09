@@ -142,7 +142,7 @@ export default function Habits() {
             <path strokeLinecap="round" strokeLinejoin="round" d="M12 4v16m8-8H4" />
           </svg>
         </button>
-      </div>
+      </header>
 
       <div className="flex-1 overflow-y-auto px-5 pb-4">
         {loading ? (
